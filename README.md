@@ -14,7 +14,7 @@ cd nn-optimizer
 pip install -r requirements.txt
 ```
 
-### Using Docker
+### Docker
 
 If you have Docker installed, you can use it to build and run the NN Optimizer project:
 
