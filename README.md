@@ -1,6 +1,40 @@
+
+
+# NN Optimizer
+
+This project implements a neural network optimizer with various features like activation functions, dropout, batch normalization, and multiple optimizers.
+
+## Installation
+
+Clone the repository and install dependencies.
+
+```bash
+git clone <repository-url>
+cd nn-optimizer
+pip install -r requirements.txt
+```
+
+### Using Docker
+
+If you have Docker installed, you can use it to build and run the NN Optimizer project:
+
+1. Build the Docker image:
+
+```bash
+docker build -t nn-optimizer .
+```
+
+2. Run the Docker container:
+
+```bash
+docker run nn-optimizer
+```
+
+This will execute the example usage script in a Docker container.
+
 ## Usage
 
-For an example of how to use the NN Optimizer package, refer to the `examples/example_usage.py` file. This script demonstrates the process of initializing the MLP model, training it with your data, and making predictions.
+Refer to the `examples/example_usage.py` file for an example of how to use the NN Optimizer package. This script demonstrates initializing the MLP model, training it with your data, and making predictions.
 
 ## Features
 
