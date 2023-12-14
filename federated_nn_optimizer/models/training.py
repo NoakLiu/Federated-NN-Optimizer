@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.optim import SGD
-from fedpggd import PerGodGradientDescent  # Or other optimizers in the folder federated-nn-optimizer
+from fedpggd import PerGodGradientDescent  # Or other optimizers in this folder (fedavg, fedaws, feddvn, fednova, fedopt, fedphp, fedreg, fedrs, fedpgd)
 
 # Define a simple neural network model
 class SimpleModel(nn.Module):
@@ -12,7 +12,7 @@ class SimpleModel(nn.Module):
     def forward(self, x):
         return self.fc(x)
 
-# Create an instance of your custom optimizer (Or other optimizers in the folder federated-nn-optimizer)
+# Create an instance of your custom optimizer (Or other optimizers in this folder (fedavg, fedaws, feddvn, fednova, fedopt, fedphp, fedreg, fedrs, fedpgd))
 model = SimpleModel()
 custom_optimizer = PerGodGradientDescent(model.parameters(), learning_rate=0.01, mu=0.01)
 
