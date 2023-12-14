@@ -1,62 +1,56 @@
-from tensorflow.python.ops import control_flow_ops
-from tensorflow.python.ops import math_ops
-from tensorflow.python.ops import state_ops
-from tensorflow.python.framework import ops
-from tensorflow.python.training import optimizer
-import tensorflow as tf
+import torch
+from torch.optim import Optimizer
 
+class PerGodGradientDescent(Optimizer):
+    def __init__(self, params, learning_rate=0.001, mu=0.01, name="PGD"):
+        defaults = dict(learning_rate=learning_rate, mu=mu)
+        super(PerGodGradientDescent, self).__init__(params, defaults)
 
-class PerGodGradientDescent(optimizer.Optimizer):
-    """Implementation of Perturbed gold Gradient Descent"""
-    def __init__(self, learning_rate=0.001, mu=0.01, use_locking=False, name="PGD"):
-        super(PerGodGradientDescent, self).__init__(use_locking, name)
-        self._lr = learning_rate
-        self._mu = mu
-        
-        # Tensor versions of the constructor arguments, created in _prepare().
-        self._lr_t = None
-        self._mu_t = None
+    def step(self, closure=None):
+        loss = None
+        if closure is not None:
+            loss = closure()
 
-    def _prepare(self):
-        self._lr_t = ops.convert_to_tensor(self._lr, name="learning_rate")
-        self._mu_t = ops.convert_to_tensor(self._mu, name="prox_mu")
+        for group in self.param_groups:
+            lr = group['learning_rate']
+            mu = group['mu']
 
-    def _create_slots(self, var_list):
-        # Create slots for the global solution.
-        for v in var_list:
-            self._zeros_slot(v, "vstar", self._name)
-            self._zeros_slot(v, "gold", self._name)
+            for p in group['params']:
+                if p.grad is None:
+                    continue
+                
+                grad = p.grad.data
+                state = self.state[p]
 
-    def _apply_dense(self, grad, var):
-        lr_t = math_ops.cast(self._lr_t, var.dtype.base_dtype)
-        mu_t = math_ops.cast(self._mu_t, var.dtype.base_dtype)
-        
-        vstar = self.get_slot(var, "vstar")
-        gold = self.get_slot(var, "gold")
+                if 'vstar' not in state:
+                    state['vstar'] = torch.zeros_like(p.data)
+                if 'gold' not in state:
+                    state['gold'] = torch.zeros_like(p.data)
 
-        var_update = state_ops.assign_sub(var, lr_t*(grad + gold + mu_t*(var-vstar))) #Update 'ref' by subtracting 'value
-        #Create an op that groups multiple operations.
-        #When this op finishes, all ops in input have finished
-        return control_flow_ops.group(*[var_update,])
+                vstar = state['vstar']
+                gold = state['gold']
 
-    def _apply_sparse(self, grad, var):
-        raise NotImplementedError("Sparse gradient updates are not supported.")
+                with torch.no_grad():
+                    v_diff = vstar - mu * (p.data - vstar)
+                    vstar.copy_(p.data)
+                    grad_diff = grad + gold + mu * v_diff
+                    p.data.add_(-lr, grad_diff)
+
+        return loss
 
     def set_params(self, cog, avg_gradient, client):
-        with client.model.graph.as_default():
-            all_vars = tf.trainable_variables()
-            for variable, value in zip(all_vars, cog):
-                vstar = self.get_slot(variable, "vstar")
-                vstar.load(value, client.model.sess)
-        
-        # get old gradient
+        all_params = list(self.param_groups[0]['params'])
+        for param, value in zip(all_params, cog):
+            state = self.state[param]
+            vstar = state['vstar']
+            vstar.data.copy_(torch.tensor(value, dtype=param.dtype))
+
         gprev = client.get_grads()
 
-        # Find g_t - F'(old)
-        gdiff = [g1-g2 for g1,g2 in zip(avg_gradient, gprev)]
+        gdiff = [g1 - g2 for g1, g2 in zip(avg_gradient, gprev)]
 
-        with client.model.graph.as_default():
-            all_vars = tf.trainable_variables()
-            for variable, grad in zip(all_vars, gdiff):
-                gold = self.get_slot(variable, "gold")
-                gold.load(grad, client.model.sess)
+        all_params = list(self.param_groups[0]['params'])
+        for param, grad in zip(all_params, gdiff):
+            state = self.state[param]
+            gold = state['gold']
+            gold.data.copy_(torch.tensor(grad, dtype=param.dtype))

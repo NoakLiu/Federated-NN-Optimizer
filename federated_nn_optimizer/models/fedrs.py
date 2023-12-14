@@ -5,14 +5,6 @@ import torch
 import torch.nn as nn
 from sklearn.metrics import f1_score
 
-from utils import Averager
-from utils import count_acc
-from utils import append_to_logs
-from utils import format_logs
-
-from tools import construct_dataloaders
-from tools import construct_optimizer
-
 
 class FedRS():
     def __init__(

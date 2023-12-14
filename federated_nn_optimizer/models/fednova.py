@@ -4,14 +4,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from torch.optim.optimizer import Optimizer
-
-from utils import Averager
-from utils import count_acc
-from utils import append_to_logs
-from utils import format_logs
-
-from tools import construct_dataloaders
 
 # https://github.com/JYWa/FedNova
 
