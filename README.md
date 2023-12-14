@@ -10,7 +10,7 @@ Clone the repository and install dependencies.
 
 ```bash
 git clone <repository-url>
-cd nn-optimizer
+cd federated-nn-optimizer
 pip install -r requirements.txt
 ```
 
@@ -21,13 +21,13 @@ If you have Docker installed, you can use it to build and run the NN Optimizer p
 1. Build the Docker image:
 
 ```bash
-docker build -t nn-optimizer .
+docker build -t federated-nn-optimizer .
 ```
 
 2. Run the Docker container:
 
 ```bash
-docker run nn-optimizer
+docker run federated-nn-optimizer
 ```
 
 This will execute the example usage script in a Docker container.
