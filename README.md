@@ -9,7 +9,7 @@ This is a package for federated learning on NN Optimizer, it implements multiple
 Clone the repository and install dependencies.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/NoakLiu/Federated-NN-Optimizer.git
 cd federated-nn-optimizer
 pip install -r requirements.txt
 ```
