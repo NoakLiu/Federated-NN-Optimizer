@@ -2,7 +2,7 @@
 
 # Federated NN Optimizer
 
-This project implements a neural network optimizer with various features like activation functions, dropout, batch normalization, and multiple optimizers.
+This is a package for federated learning on NN Optimizer, it implements multiple functions of federated NN inlude: avg, aws, dvn, nova, opt, php, reg, rs, pgd, pggd.
 
 ## Installation
 
