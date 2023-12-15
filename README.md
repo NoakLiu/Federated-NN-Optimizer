@@ -34,14 +34,7 @@ This will execute the example usage script in a Docker container.
 
 ## Usage
 
-Refer to the `examples/example_usage.py` file for an example of how to use the NN Optimizer package. This script demonstrates initializing the MLP model, training it with your data, and making predictions.
-
-## Optimizer Features
-
-- Activation Functions: Includes ReLU, Sigmoid, Tanh, Softmax, etc.
-- Dropout: Provides dropout functionality for neural network regularization.
-- Batch Normalization: Helps to speed up training and improve performance.
-- Optimizers: Supports various optimization algorithms like SGD, Momentum, NAG, and Adagrad.
+Refer to the `examples/example_usage.py` file for an example of how to use the Federated NN Optimizer package. This script demonstrates initializing the MLP model, training it with your data on our optimizer models, and making predictions.
 
 ## Federated Features
 
